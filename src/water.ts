@@ -36,6 +36,9 @@ export class RiverWater {
     this.material = new THREE.ShaderMaterial({
       transparent: false,
       side: THREE.DoubleSide,
+      polygonOffset: true,
+      polygonOffsetFactor: 2,
+      polygonOffsetUnits: 2,
       uniforms: {
         uTime: { value: 0 },
         uSun: { value: SUN.clone() },

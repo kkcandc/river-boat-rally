@@ -80,7 +80,7 @@ export class Game {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.05;
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFShadowMap;
+    this.renderer.shadowMap.type = THREE.BasicShadowMap;
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
     this.renderer.domElement.id = "view";
     root.prepend(this.renderer.domElement);
@@ -409,7 +409,7 @@ export class Game {
     const fz = this.frame.tangent.z + this.frame.right.z * slip * 0.7;
     const yaw = Math.atan2(fx, fz);
     const forward = this.scratchF.set(Math.sin(yaw), 0, Math.cos(yaw));
-    const right = this.scratchR.set(Math.cos(yaw), 0, -Math.sin(yaw));
+    const right = this.scratchR.set(-Math.cos(yaw), 0, Math.sin(yaw));
     const x = this.frame.point.x + this.frame.right.x * boat.lateral;
     const z = this.frame.point.z + this.frame.right.z * boat.lateral;
     const bowH = waveHeight(x + forward.x * 1.2, z + forward.z * 1.2, time);
@@ -417,7 +417,7 @@ export class Game {
     const portH = waveHeight(x - right.x * 0.48, z - right.z * 0.48, time);
     const starH = waveHeight(x + right.x * 0.48, z + right.z * 0.48, time);
     const height = (bowH + sternH + portH + starH) / 4;
-    boat.displayY = damp(boat.displayY, height + 0.02, 7.5, dt);
+    boat.displayY = damp(boat.displayY, height + 0.55, 7.5, dt);
     boat.pitch = damp(boat.pitch, (sternH - bowH) * 1.15, 5.5, dt);
     boat.roll = damp(boat.roll, (starH - portH) * 1.35 - boat.latVelocity * 0.045, 6, dt);
     boat.group.position.set(x, boat.displayY, z);
@@ -520,8 +520,8 @@ export class Game {
       this.look.set(0, 0, 0);
       return;
     }
-    this.desired.copy(boat.pos).addScaledVector(boat.forward, -8.4);
-    this.desired.y = boat.displayY + 3.65;
+    this.desired.copy(boat.pos).addScaledVector(boat.forward, -9.2);
+    this.desired.y = boat.displayY + 4.6;
     this.course.path.frameAt(boat.dist - 7, this.frame);
     const relX = this.desired.x - this.frame.point.x;
     const relZ = this.desired.z - this.frame.point.z;
@@ -532,7 +532,7 @@ export class Game {
     this.desired.addScaledVector(this.frame.right, lat);
     this.desired.addScaledVector(this.frame.tangent, Math.min(along, -2.2));
     const wave = waveHeight(this.desired.x, this.desired.z, time);
-    this.desired.y = Math.max(wave + 1.6, boat.displayY + 3.15);
+    this.desired.y = Math.max(wave + 2.2, boat.displayY + 4.05);
     if (!this.camReady) {
       this.camPos.copy(this.desired);
       this.camReady = true;
@@ -545,8 +545,8 @@ export class Game {
       this.camPos.y += Math.cos(time * 38) * 0.02;
     }
     this.camera.position.copy(this.camPos);
-    this.look.copy(boat.pos).addScaledVector(boat.forward, 7.2);
-    this.look.y = boat.displayY + 0.85;
+    this.look.copy(boat.pos).addScaledVector(boat.forward, 6.4);
+    this.look.y = boat.displayY + 1.45;
     this.camera.up.set(0, 1, 0);
     this.camera.lookAt(this.look);
     this.camera.rotateZ(THREE.MathUtils.clamp(-boat.latVelocity * 0.016, -0.16, 0.16));

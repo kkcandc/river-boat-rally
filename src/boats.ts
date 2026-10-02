@@ -125,8 +125,8 @@ function makeLabel(name: string, accent: string): { sprite: THREE.Sprite; ctx: C
   const sprite = new THREE.Sprite(
     new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }),
   );
-  sprite.scale.set(3.5, 0.98, 1);
-  sprite.position.y = 2.15;
+  sprite.scale.set(1.85, 0.52, 1);
+  sprite.position.y = 2.85;
   sprite.renderOrder = 5;
   paintLabel(ctx, tex, name, accent);
   return { sprite, ctx, tex };
@@ -174,14 +174,49 @@ function bowWave(): THREE.Mesh {
   return mesh;
 }
 
+function addSilhouette(group: THREE.Group, def: RacerDef, accent: THREE.Material): void {
+  const finMat = new THREE.MeshStandardMaterial({
+    color: def.hull,
+    emissive: def.hull,
+    emissiveIntensity: 0.62,
+    roughness: 0.35,
+    side: THREE.DoubleSide,
+  });
+  const panel = (w: number, h: number, x: number, y: number, z: number) => {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, 0.08), finMat);
+    mesh.position.set(x, y, z);
+    mesh.castShadow = true;
+    group.add(mesh);
+    return mesh;
+  };
+  if (def.name === "SOLA") {
+    panel(0.62, 1.7, 0, 1.35, -0.15);
+  } else if (def.name === "BRINE") {
+    panel(1.55, 0.72, 0, 1.15, -0.05);
+    panel(0.16, 1.15, -0.62, 1.15, -0.05);
+    panel(0.16, 1.15, 0.62, 1.15, -0.05);
+  } else if (def.name === "KESTREL") {
+    panel(0.42, 1.45, -0.48, 1.28, -0.85);
+    panel(0.42, 1.45, 0.48, 1.28, -0.85);
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(1.35, 0.08, 0.08), accent);
+    bar.position.set(0, 1.95, -0.85);
+    group.add(bar);
+  } else {
+    const swept = panel(0.48, 1.85, 0.28, 1.4, -0.55);
+    swept.rotation.z = -0.22;
+  }
+}
+
 export function createBoat(def: RacerDef): Boat {
   const group = new THREE.Group();
   group.rotation.order = "YXZ";
 
   const hullMat = new THREE.MeshStandardMaterial({
     color: def.hull,
-    roughness: 0.38,
-    metalness: 0.08,
+    emissive: def.hull,
+    emissiveIntensity: 0.42,
+    roughness: 0.45,
+    metalness: 0.04,
     side: THREE.DoubleSide,
   });
   const deckMat = new THREE.MeshStandardMaterial({ color: def.deck, roughness: 0.62, metalness: 0.02 });
@@ -225,13 +260,33 @@ export function createBoat(def: RacerDef): Boat {
   glass.rotation.x = -0.45;
   group.add(glass);
 
-  const helmet = new THREE.Mesh(
-    new THREE.SphereGeometry(0.13, 12, 10),
-    new THREE.MeshStandardMaterial({ color: def.hull, roughness: 0.35, metalness: 0.15 }),
-  );
-  helmet.position.set(0, 0.7, -0.12);
-  helmet.scale.y = 0.9;
+  const suit = new THREE.MeshStandardMaterial({
+    color: def.hull,
+    emissive: def.hull,
+    emissiveIntensity: 0.28,
+    roughness: 0.5,
+  });
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.22, 4, 8), suit);
+  torso.position.set(0, 0.72, -0.12);
+  torso.castShadow = true;
+  group.add(torso);
+  const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), suit);
+  helmet.position.set(0, 1.02, -0.1);
+  helmet.scale.set(1, 0.92, 1.05);
   group.add(helmet);
+  const visor = new THREE.Mesh(
+    new THREE.SphereGeometry(0.13, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.55),
+    new THREE.MeshStandardMaterial({
+      color: 0x071018,
+      emissive: def.accent,
+      emissiveIntensity: 0.35,
+      roughness: 0.15,
+      metalness: 0.4,
+    }),
+  );
+  visor.position.set(0, 1.02, 0.02);
+  visor.rotation.x = -0.4;
+  group.add(visor);
 
   const lamp = new THREE.Mesh(
     new THREE.SphereGeometry(0.07, 10, 8),
@@ -272,6 +327,8 @@ export function createBoat(def: RacerDef): Boat {
   bowR.rotation.set(-Math.PI / 2.15, -0.15, -0.55);
   group.add(bowL, bowR);
 
+  addSilhouette(group, def, accent);
+
   const accentHex = "#" + def.accent.toString(16).padStart(6, "0");
   const { sprite, ctx, tex } = makeLabel(def.name, accentHex);
   group.add(sprite);
@@ -282,6 +339,12 @@ export function createBoat(def: RacerDef): Boat {
   );
   shadow.rotation.x = -Math.PI / 2;
   shadow.renderOrder = 2;
+
+  group.scale.setScalar(2.05);
+  group.traverse((obj) => {
+    const mesh = obj as THREE.Mesh;
+    if (mesh.isMesh) mesh.renderOrder = 3;
+  });
 
   const hist: HistPoint[] = [];
   for (let i = 0; i < HIST; i++) hist.push({ x: 0, z: 0, rx: 1, rz: 0 });

@@ -80,7 +80,9 @@ export class RiverPath {
     out.tangent.lerpVectors(this.tangents[i], this.tangents[j], t);
     if (out.tangent.lengthSq() < 1e-8) out.tangent.copy(this.tangents[i]);
     else out.tangent.normalize();
-    out.right.crossVectors(UP, out.tangent);
+    // Starboard when looking along the tangent. cross(up, tangent) points to port
+    // on a chase camera, which made left/right steer backwards.
+    out.right.crossVectors(out.tangent, UP);
     if (out.right.lengthSq() < 1e-8) out.right.set(1, 0, 0);
     else out.right.normalize();
   }
