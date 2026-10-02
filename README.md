@@ -1,5 +1,7 @@
 # River Energy
 
+Live demo: https://river-boat-rally.vercel.app
+
 An original arcade boat race on a winding river. Four stylized boats, a chase camera, and a water surface with waves, foam, wakes, spray, and reflections. No Nintendo names, characters, or branding.
 
 ## Play
