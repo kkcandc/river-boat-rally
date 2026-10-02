@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta name="theme-color" content="#102033" />
+    <meta
+      name="description"
+      content="River Energy — an original arcade boat race on a winding river at blue hour."
+    />
+    <title>River Energy</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Russo+One&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="app">
+      <div id="hud">
+        <div id="brand">
+          <strong>RIVER <em>ENERGY</em></strong>
+          <small>BLUE HOUR CUP</small>
+        </div>
+        <div id="lapline">
+          <span id="lap">WARMUP</span>
+          <span id="clock">0:00.00</span>
+        </div>
+        <div id="place"><span id="placeNum">1</span><sup id="placeSuf">st</sup></div>
+        <div id="pace"><b id="paceNum">0</b><small>PACE</small></div>
+        <div id="meter"><div id="meterFill"></div><span>CURRENT</span></div>
+        <canvas id="map" width="220" height="220" aria-label="River map"></canvas>
+        <div id="legend">A/D steer · W full throttle · S brake · Space boost</div>
+        <div id="flash"></div>
+        <div id="count"></div>
+        <button id="mute" type="button" aria-label="Mute">♪</button>
+        <div id="cta">
+          <p class="eyebrow">Four boats · one river</p>
+          <h1>RIVER ENERGY</h1>
+          <p class="lede">Hold the racing line, grab the gold current rings, and burn a boost down the straight.</p>
+          <button id="raceBtn" type="button">Start race</button>
+          <p class="fine">Original boats and course. Not affiliated with Nintendo.</p>
+        </div>
+        <div id="results" hidden>
+          <p class="eyebrow">Blue Hour Cup</p>
+          <h2>Finish line</h2>
+          <ol id="standings"></ol>
+          <button id="againBtn" type="button">Race again</button>
+        </div>
+        <div id="pads">
+          <div id="stick" aria-label="Steer"><div id="knob"></div></div>
+          <div id="rightPads">
+            <button id="brakePad" type="button">BRAKE</button>
+            <button id="boostPad" type="button">BOOST</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
